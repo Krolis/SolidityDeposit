@@ -1,0 +1,128 @@
+{
+  "contractName": "AddressRegister",
+  "abi": [
+    {
+      "inputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    }
+  ],
+  "bytecode": "0x60606040523415600e57600080fd5b603580601b6000396000f3006060604052600080fd00a165627a7a723058203022a56cc4e1084f97822ecd383af994c28714b06149e4179115b69dccf3d5210029",
+  "deployedBytecode": "0x6060604052600080fd00a165627a7a723058203022a56cc4e1084f97822ecd383af994c28714b06149e4179115b69dccf3d5210029",
+  "sourceMap": "186:76:0:-;;;218:42;;;;;;;;186:76;;;;;;",
+  "deployedSourceMap": "186:76:0:-;;;;;",
+  "source": "pragma solidity 0.4.19;\n\n/**\n * @title Account addresses register\n * @dev Allows to store addresses in hopefully optimal way\n * @author Kroliczek Dominik (https://github.com/krolis)\n */\ncontract AddressRegister {\n\n    function AddressRegister() public {\n\n    }\n}\n",
+  "sourcePath": "/home/domino/blok/default-set-up-for-projects/contracts/AddressRegister.sol",
+  "ast": {
+    "attributes": {
+      "absolutePath": "/home/domino/blok/default-set-up-for-projects/contracts/AddressRegister.sol",
+      "exportedSymbols": {
+        "AddressRegister": [
+          6
+        ]
+      }
+    },
+    "children": [
+      {
+        "attributes": {
+          "literals": [
+            "solidity",
+            "0.4",
+            ".19"
+          ]
+        },
+        "id": 1,
+        "name": "PragmaDirective",
+        "src": "0:23:0"
+      },
+      {
+        "attributes": {
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "contract",
+          "documentation": "@title Account addresses register\n@dev Allows to store addresses in hopefully optimal way\n@author Kroliczek Dominik (https://github.com/krolis)",
+          "fullyImplemented": true,
+          "linearizedBaseContracts": [
+            6
+          ],
+          "name": "AddressRegister",
+          "scope": 7
+        },
+        "children": [
+          {
+            "attributes": {
+              "constant": false,
+              "implemented": true,
+              "isConstructor": true,
+              "modifiers": [
+                null
+              ],
+              "name": "AddressRegister",
+              "payable": false,
+              "scope": 6,
+              "stateMutability": "nonpayable",
+              "superFunction": null,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 2,
+                "name": "ParameterList",
+                "src": "242:2:0"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 3,
+                "name": "ParameterList",
+                "src": "252:0:0"
+              },
+              {
+                "attributes": {
+                  "statements": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 4,
+                "name": "Block",
+                "src": "252:8:0"
+              }
+            ],
+            "id": 5,
+            "name": "FunctionDefinition",
+            "src": "218:42:0"
+          }
+        ],
+        "id": 6,
+        "name": "ContractDefinition",
+        "src": "186:76:0"
+      }
+    ],
+    "id": 7,
+    "name": "SourceUnit",
+    "src": "0:263:0"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.19+commit.c4cbbb05.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "1.0.1",
+  "updatedAt": "2018-02-01T16:02:42.188Z"
+}
