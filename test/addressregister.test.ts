@@ -11,6 +11,7 @@ import {
     findLastLog,
     ZERO_ADDRESS
 } from './helpers';
+import {ScheduledEvent} from "onlive";
 
 declare const web3: Web3;
 declare const artifacts: RegisterArtifacts;
@@ -30,51 +31,99 @@ contract('AddressRegister', accounts => {
     });
 
     describe('#add addresses', () => {
-        it('should be able to add address', async () => {
+
+        beforeEach(async () => {
             addressRegister = await AddressRegisterContract.new({from: owner});
             assert.isOk(addressRegister);
         });
 
+        /*
+        * Maybe silent not adding when duplicated could be better.
+        * Then to confirm adding address call get address.
+        */
+
+        it('should be able to add address', async () => {
+            const addingRes = await addressRegister.addAddress(accounts[0], {from: owner});
+            console.log(addingRes);
+            assert.isTrue(addingRes);
+        });
+
         it('should not be able to add duplicated address', async () => {
-            addressRegister = await AddressRegisterContract.new({from: owner});
-            assert.isOk(addressRegister);
+            const fisrsAddingRes = await addressRegister.addAddress(accounts[0]);
+            assert.isTrue(fisrsAddingRes);
+            const secondAddingRes = await addressRegister.addAddress(accounts[0]);
+            assert.isFalse(secondAddingRes);
         });
     });
 
     describe('#get addresses', () => {
 
-        it('should be able to get all addresses', async () => {
+        const addressesToAdd = [
+            ...accounts
+        ];
+
+        beforeEach(async () => {
             addressRegister = await AddressRegisterContract.new({from: owner});
             assert.isOk(addressRegister);
+
+            addressesToAdd.forEach(address => {
+                addressRegister.addAddress(address);
+            });
+        });
+
+        it('should be able to get all addresses', async () => {
+            const allAddresses = await addressRegister.getAllAddresses();
+            assert.equal(allAddresses.length, addressesToAdd.length);
         });
 
         it('should be able to check if address exists', async () => {
-            addressRegister = await AddressRegisterContract.new({from: owner});
-            assert.isOk(addressRegister);
+            const isExist = await addressRegister.isExist(addressesToAdd[0]);
+            assert.isTrue(isExist);
         });
 
         it('should be able to check if address does not exist', async () => {
-            addressRegister = await AddressRegisterContract.new({from: owner});
-            assert.isOk(addressRegister);
+            const isExist = await addressRegister.isExist('0x2a1c7f37ff4041072cc97ba2f9c31d4e6147935e');
+            assert.isFalse(isExist);
         });
     });
 
     describe('#edit address', () => {
 
-        it('should be able to remove address', async () => {
+        const addressesToAdd = [
+            ...accounts
+        ];
+
+        beforeEach(async () => {
             addressRegister = await AddressRegisterContract.new({from: owner});
             assert.isOk(addressRegister);
+
+            addressesToAdd.forEach(address => {
+                addressRegister.addAddress(address);
+            });
         });
 
-        it('should not be able to remove not existing address', async () => {
-            addressRegister = await AddressRegisterContract.new({from: owner});
-            assert.isOk(addressRegister);
+        const checkIfAddressExists = async (address: any) => {
+            return await addressRegister.isExist(address);
+        };
+
+        it('should be able to remove address as a owner', async () => {
+            await addressRegister.remove(addressesToAdd[0], {from: owner});
+            assert.isFalse(checkIfAddressExists(addressesToAdd[0]));
         });
 
-        it('should be able to remove all addresses', async () => {
-            addressRegister = await AddressRegisterContract.new({from: owner});
-            assert.isOk(addressRegister);
-            console.log(accounts);
+        it('should not be able to remove address as a not owner', async () => {
+            await addressRegister.remove(addressesToAdd[0], {from: accounts[1]});
+            assert.isTrue(checkIfAddressExists(addressesToAdd[0]));
+        });
+
+        it('should be able to remove all addresses as a owner', async () => {
+            await addressRegister.removeAll({from: owner});
+            assert.equal((await addressRegister.getAll()).length, 0);
+        });
+
+        it('should not be able to remove all addresses as a not owner', async () => {
+            await addressRegister.removeAll({from: accounts[1]});
+            assert.equal((await addressRegister.getAll()).length, addressesToAdd.length);
         });
     });
 });
