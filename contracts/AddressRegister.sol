@@ -7,14 +7,28 @@ pragma solidity 0.4.18;
  */
 contract AddressRegister {
 
+    address owner;
+
     mapping(address => bool) public addresses;
 
-    function AddressRegister() public {
+    event AddressRegistered(address addr);
+
+    modifier onlyIfAddressExists(address addr){
+        require(addresses[addr] == false);
+        _;
     }
 
-    function addAddress(address addressToAdd) public returns (bool addressData){
-        addressData = addresses[addressToAdd];
+    modifier onlyOwner(address addr) {
+        require(address[addr] == owner);
+    }
+
+    function AddressRegister() public {
+        owner = msg.sender;
+    }
+
+    function registerAddress(address addressToAdd) public onlyIfAddressExists(addressToAdd) {
         addresses[addressToAdd] = true;
+        AddressRegistered(addressToAdd);
     }
 
     function isExist(address addressToCheck) public view returns (bool){
