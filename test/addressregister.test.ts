@@ -47,83 +47,86 @@ contract('AddressRegister', accounts => {
             });
         });
     });
-    /*
 
-        describe('#get addresses', () => {
+    describe('#get addresses', () => {
 
-            const addressesToAdd = [
-                ...accounts
-            ];
+        const addressesToAdd = [
+            ...accounts
+        ];
 
-            beforeEach(async () => {
-                addressRegister = await AddressRegisterContract.new({from: owner});
-                assert.isOk(addressRegister);
+        beforeEach(async () => {
+            addressRegister = await AddressRegisterContract.new({from: owner});
+            assert.isOk(addressRegister);
 
-                addressesToAdd.forEach(address => {
-                    addressRegister.registerAddress(address);
-                });
-            });
-
-            it('should be able to get all addresses', async () => {
-                const allAddresses = await addressRegister.getAllAddresses();
-                assert.equal(allAddresses.length, addressesToAdd.length);
-            });
-
-            it('should be able to check if address exists', async () => {
-                const isExist = await addressRegister.isExist(addressesToAdd[0]);
-                assert.isTrue(isExist);
-            });
-
-            it('should be able to check if address does not exist', async () => {
-                const isExist = await addressRegister.isExist('0x2a1c7f37ff4041072cc97ba2f9c31d4e6147935e');
-                assert.isFalse(isExist);
+            addressesToAdd.forEach(address => {
+                addressRegister.registerAddress(address);
             });
         });
 
-        describe('#edit address', () => {
+        it('should be able to get all addresses', async () => {
+            const allAddresses = await addressRegister.getAllAddresses();
+            assert.equal(allAddresses.length, addressesToAdd.length);
+            addressesToAdd.forEach(addr => {
+                assert.isTrue(allAddresses.contains(addr));
+            });
+        });
 
-            const addressesToAdd = [
-                ...accounts
-            ];
+        it('should be able to check if address exists', async () => {
+            const isExist = await addressRegister.isExist(addressesToAdd[0]);
+            assert.isTrue(isExist);
+        });
 
-            beforeEach(async () => {
-                addressRegister = await AddressRegisterContract.new({from: owner});
-                assert.isOk(addressRegister);
+        it('should be able to check if address does not exist', async () => {
+            const isExist = await addressRegister.isExist('0x2a1c7f37ff4041072cc97ba2f9c31d4e6147935e');
+            assert.isFalse(isExist);
+        });
+    });
 
-                addressesToAdd.forEach(address => {
-                    addressRegister.registerAddress(address);
-                });
+    describe('#edit address', () => {
+
+        const addressesToAdd = [
+            ...accounts
+        ];
+
+        beforeEach(async () => {
+            addressRegister = await AddressRegisterContract.new({from: owner});
+            assert.isOk(addressRegister);
+
+            addressesToAdd.forEach(address => {
+                addressRegister.registerAddress(address);
             });
 
-            const checkIfAddressExists = async (address: any) => {
-                return await addressRegister.isExist(address);
-            };
+            assert.equal((await addressRegister.getAllAddresses()).length, 1);
+        });
 
-            it('should be able to remove address as a owner', async () => {
-                await addressRegister.remove(addressesToAdd[0], {from: owner});
-                assert.isFalse(checkIfAddressExists(addressesToAdd[0]));
-            });
+        const checkIfAddressExists = async (address: any) => {
+            return await addressRegister.isExist(address);
+        };
 
-            it('should not be able to remove address as a not owner', async () => {
+        it('should be able to remove address as a owner', async () => {
+            await addressRegister.remove(addressesToAdd[0], {from: owner});
+            assert.isFalse(checkIfAddressExists(addressesToAdd[0]));
+        });
+
+        it('should not be able to remove address as a not owner', async () => {
+            await assertReverts(async () => {
                 await addressRegister.remove(
                     addressesToAdd[0],
                     {from: accounts[1]}
                 );
-                assert.isTrue(checkIfAddressExists(addressesToAdd[0]));
             });
+        });
 
-            it('should be able to remove all as a owner', async () => {
-                await addressRegister.removeAll({from: owner});
-                assert.equal((await addressRegister.getAll()).length, 0);
-            });
+        it('should be able to remove all as a owner', async () => {
+            await addressRegister.removeAll({from: owner});
+            assert.equal((await addressRegister.getAllAddresses()).length, 0);
+        });
 
-            it('should not be able to remove all as not owner', async () => {
+        it('should not be able to remove all as not owner', async () => {
+            await assertReverts(async () => {
                 await addressRegister.removeAll({from: accounts[1]});
-                assert.equal(
-                    (await addressRegister.getAllAddresses()).length,
-                    addressesToAdd.length
-                );
             });
+        });
     });
-    */
+
 });

@@ -7,7 +7,7 @@ pragma solidity 0.4.18;
  */
 contract AddressRegister {
 
-    address owner;
+    address private owner;
 
     mapping(address => bool) public addresses;
 
@@ -18,15 +18,20 @@ contract AddressRegister {
         _;
     }
 
-    modifier onlyOwner(address addr) {
-        require(address[addr] == owner);
+    modifier onlyOwner() {
+        require(msg.sender == owner);
+        _;
     }
 
     function AddressRegister() public {
         owner = msg.sender;
     }
 
-    function registerAddress(address addressToAdd) public onlyIfAddressExists(addressToAdd) {
+    function registerAddress(address addressToAdd)
+        public
+        onlyOwner
+        onlyIfAddressExists(addressToAdd)
+    {
         addresses[addressToAdd] = true;
         AddressRegistered(addressToAdd);
     }
@@ -35,16 +40,15 @@ contract AddressRegister {
         return addresses[addressToCheck];
     }
 
-    function getAllAddresses() public returns (address[]){
+    function getAllAddresses() public view returns (address[]){
         return new address[](0);
     }
 
-
-    function remove(address addressToRemove) public returns (bool addressData){
+    function remove(address addressToRemove) public onlyOwner returns (bool addressData){
         addressData = addresses[addressToRemove];
         addresses[addressToRemove] = false;
     }
 
-    function removeAll() public {
+    function removeAll() public onlyOwner {
     }
 }
