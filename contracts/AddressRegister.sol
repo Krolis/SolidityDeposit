@@ -7,9 +7,30 @@ pragma solidity 0.4.18;
  */
 contract AddressRegister {
 
-    uint256 public a;
+    mapping(address => bool) public addresses;
 
     function AddressRegister() public {
-        a =1;
+    }
+
+    function addAddress(address addressToAdd) public returns (bool addressData){
+        addressData = addresses[addressToAdd];
+        addresses[addressToAdd] = true;
+    }
+
+    function isExist(address addressToCheck) public view returns (bool){
+        return addresses[addressToCheck];
+    }
+
+    function getAllAddresses() public returns (address[]){
+        return new address[](0);
+    }
+
+
+    function remove(address addressToRemove) public returns (bool addressData){
+        addressData = addresses[addressToRemove];
+        addresses[addressToRemove] = false;
+    }
+
+    function removeAll() public {
     }
 }

@@ -5,13 +5,6 @@ import * as Web3 from 'web3';
 import {AddressRegister, RegisterArtifacts} from 'register';
 
 import {ContractContextDefinition} from 'truffle';
-import {
-    assertNumberEqual,
-    assertReverts,
-    findLastLog,
-    ZERO_ADDRESS
-} from './helpers';
-import {ScheduledEvent} from "onlive";
 
 declare const web3: Web3;
 declare const artifacts: RegisterArtifacts;
@@ -44,6 +37,7 @@ contract('AddressRegister', accounts => {
 
         it('should be able to add address', async () => {
             const addingRes = await addressRegister.addAddress(accounts[0], {from: owner});
+            // noinspection TsLint
             console.log(addingRes);
             assert.isTrue(addingRes);
         });
@@ -112,18 +106,24 @@ contract('AddressRegister', accounts => {
         });
 
         it('should not be able to remove address as a not owner', async () => {
-            await addressRegister.remove(addressesToAdd[0], {from: accounts[1]});
+            await addressRegister.remove(
+                addressesToAdd[0],
+                {from: accounts[1]}
+            );
             assert.isTrue(checkIfAddressExists(addressesToAdd[0]));
         });
 
-        it('should be able to remove all addresses as a owner', async () => {
+        it('should be able to remove all as a owner', async () => {
             await addressRegister.removeAll({from: owner});
             assert.equal((await addressRegister.getAll()).length, 0);
         });
 
-        it('should not be able to remove all addresses as a not owner', async () => {
+        it('should not be able to remove all as not owner', async () => {
             await addressRegister.removeAll({from: accounts[1]});
-            assert.equal((await addressRegister.getAll()).length, addressesToAdd.length);
+            assert.equal(
+                (await addressRegister.getAllAddresses()).length,
+                addressesToAdd.length
+            );
         });
     });
 });
