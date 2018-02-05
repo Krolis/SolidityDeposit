@@ -7,15 +7,14 @@ pragma solidity 0.4.18;
  */
 contract AddressRegister {
 
-    struct Entry {
+    struct QueueEntry {
         address prev;
         address next;
     }
 
     address private owner;
 
-    mapping(address => Entry) private addressesQueue;
-
+    mapping(address => QueueEntry) private addressesQueue;
 
     address private tail;
 
@@ -68,7 +67,7 @@ contract AddressRegister {
     }
 
     function remove(address addressToRemove) public onlyOwner {
-        Entry entry = addressesQueue[addressToRemove];
+        QueueEntry entry = addressesQueue[addressToRemove];
 
         addressesQueue[entry.prev].next = entry.next;
         addressesQueue[entry.next].prev = entry.prev;
@@ -92,3 +91,4 @@ contract AddressRegister {
         delete addressesCount;
     }
 }
+q
