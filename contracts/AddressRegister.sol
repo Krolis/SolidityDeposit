@@ -22,12 +22,10 @@ contract AddressRegister {
 
     uint256 private addressesCount;
 
-    mapping(address => bool) private addressesExistence;
-
     event AddressRegistered(address addr);
 
-    modifier onlyIfAddressExists(address addr){
-        require(addressesExistence[addr] == false);
+    modifier onlyIfAddressNotExist(address addr){
+        require(!isExist(addr));
         _;
     }
 
@@ -43,7 +41,7 @@ contract AddressRegister {
     function registerAddress(address addressToAdd)
     public
     onlyOwner
-    onlyIfAddressExists(addressToAdd)
+    onlyIfAddressNotExist(addressToAdd)
     {
         if (head == 0) {
             head = addressToAdd;
@@ -56,13 +54,11 @@ contract AddressRegister {
 
         addressesCount++;
 
-        addressesExistence[addressToAdd] = true;
-
         AddressRegistered(addressToAdd);
     }
 
     function isExist(address addressToCheck) public view returns (bool){
-        return addressesExistence[addressToCheck];
+        return addressToCheck == tail || addressesQueue[addressToCheck].next != address(0);
     }
 
     function getAllAddresses() public view returns (address[]){
@@ -71,7 +67,6 @@ contract AddressRegister {
         address iterator = head;
 
         for (uint i = 0; i < addressesCount; i++) {
-            //assert?
             result[i] = iterator;
             iterator = addressesQueue[iterator].next;
         }
@@ -84,18 +79,19 @@ contract AddressRegister {
         addressesQueue[entry.prev].next = entry.next;
         addressesQueue[entry.next].prev = entry.prev;
 
-        addressesCount--;
+        delete entry.next;
+        delete entry.prev;
 
-        addressesExistence[addressToRemove] = false;
+        addressesCount--;
     }
 
     function removeAll() public onlyOwner {
         address iterator = head;
 
         for (uint i = 0; i < addressesCount; i++) {
-            delete addressesExistence[iterator];
+            address toDelete = iterator;
             iterator = addressesQueue[iterator].next;
-            delete addressesQueue[iterator].prev;
+            delete addressesQueue[toDelete];
         }
 
         delete head;
