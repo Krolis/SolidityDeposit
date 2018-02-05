@@ -16,7 +16,6 @@ contract AddressRegister {
 
     mapping(address => Entry) private addressesQueue;
 
-    address private head;
 
     address private tail;
 
@@ -43,11 +42,6 @@ contract AddressRegister {
     onlyOwner
     onlyIfAddressNotExist(addressToAdd)
     {
-        if (head == 0) {
-            head = addressToAdd;
-            tail = addressToAdd;
-        }
-
         addressesQueue[addressToAdd].prev = tail;
         addressesQueue[tail].next = addressToAdd;
         tail = addressToAdd;
@@ -64,11 +58,11 @@ contract AddressRegister {
     function getAllAddresses() public view returns (address[]){
         address[] memory result = new address[](addressesCount);
 
-        address iterator = head;
+        address iterator = tail;
 
         for (uint i = 0; i < addressesCount; i++) {
             result[i] = iterator;
-            iterator = addressesQueue[iterator].next;
+            iterator = addressesQueue[iterator].prev;
         }
         return result;
     }
@@ -86,15 +80,14 @@ contract AddressRegister {
     }
 
     function removeAll() public onlyOwner {
-        address iterator = head;
+        address iterator = tail;
 
         for (uint i = 0; i < addressesCount; i++) {
             address toDelete = iterator;
-            iterator = addressesQueue[iterator].next;
+            iterator = addressesQueue[iterator].prev;
             delete addressesQueue[toDelete];
         }
 
-        delete head;
         delete tail;
         delete addressesCount;
     }
