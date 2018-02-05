@@ -13,22 +13,23 @@ declare module 'register' {
     namespace register {
         interface Migrations extends ContractBase {
             setCompleted(completed: number,
-                         options?: TransactionOptions
-            ): Promise<TransactionResult>;
+                         options?: TransactionOptions): Promise<TransactionResult>;
 
             upgrade(address: Address,
-                    options?: TransactionOptions)
-                : Promise<TransactionResult>;
+                    options?: TransactionOptions): Promise<TransactionResult>;
         }
 
         interface AddressRegister extends ContractBase {
-            register(): Promise<string>;
 
-            isExist(addr: Address): Address;
+            registerAddress(address: Address): void;
 
-            getAllAddresses(): string[];
+            isExist(addr: number): boolean;
+
+            getNextAddress(addr: Address): object;
 
             remove(addr: Address, options?: TransactionOptions): string;
+
+            removeAll(options?: TransactionOptions): void;
         }
 
         interface MigrationsContract extends Contract<Migrations> {

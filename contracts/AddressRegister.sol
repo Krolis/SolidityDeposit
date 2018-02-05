@@ -9,12 +9,23 @@ contract AddressRegister {
 
     address private owner;
 
-    mapping(address => bool) public addresses;
+    struct Entry {
+        address last;
+        address next;
+    }
+
+    mapping(address => Entry) private addressesQueue;
+
+    address private head;
+
+    address private tail;
+
+    mapping(address => bool) private addressesExistence;
 
     event AddressRegistered(address addr);
 
     modifier onlyIfAddressExists(address addr){
-        require(addresses[addr] == false);
+        require(addressesExistence[addr] == false);
         _;
     }
 
@@ -28,27 +39,47 @@ contract AddressRegister {
     }
 
     function registerAddress(address addressToAdd)
-        public
-        onlyOwner
-        onlyIfAddressExists(addressToAdd)
+    public
+    onlyOwner
+    onlyIfAddressExists(addressToAdd)
     {
-        addresses[addressToAdd] = true;
+        if (head == 0) {
+            head = addressToAdd;
+            tail = addressToAdd;
+        }
+
+        addressesQueue[addressToAdd].last = tail;
+        addressesQueue[tail].next = addressToAdd;
+        tail = addressToAdd;
+
+        addressesExistence[addressToAdd] = true;
+
         AddressRegistered(addressToAdd);
     }
 
     function isExist(address addressToCheck) public view returns (bool){
-        return addresses[addressToCheck];
+        return addressesExistence[addressToCheck];
     }
 
-    function getAllAddresses() public view returns (address[]){
-        return new address[](0);
+    function getNextAddress(address currentAddress) public view returns (address) {
+        if (currentAddress == 0) {
+            return head;
+        } else {
+            return addressesQueue[currentAddress].next;
+        }
     }
 
-    function remove(address addressToRemove) public onlyOwner returns (bool addressData){
-        addressData = addresses[addressToRemove];
-        addresses[addressToRemove] = false;
+    function remove(address addressToRemove) public onlyOwner{
+        Entry entry = addressesQueue[addressToRemove];
+
+        addressesQueue[entry.last].next = entry.next;
+        addressesQueue[entry.next].last = entry.last;
+
+        addressesExistence[addressToRemove] = false;
     }
 
     function removeAll() public onlyOwner {
+
+
     }
 }

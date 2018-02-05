@@ -5,7 +5,8 @@ import * as Web3 from 'web3';
 import {AddressRegister, RegisterArtifacts} from 'register';
 
 import {ContractContextDefinition} from 'truffle';
-import {assertReverts, findLastLog} from './helpers';
+import {assertReverts, findLastLog, ZERO_ADDRESS} from './helpers';
+import {all} from "truffle-compile";
 
 declare const web3: Web3;
 declare const artifacts: RegisterArtifacts;
@@ -64,10 +65,15 @@ contract('AddressRegister', accounts => {
         });
 
         it('should be able to get all addresses', async () => {
-            const allAddresses = await addressRegister.getAllAddresses();
+            const allAddresses: Address[] = [];
+            let iter = (await addressRegister.getNextAddress(0));
+            while (iter != ZERO_ADDRESS) {
+                allAddresses.push(iter);
+                iter = await addressRegister.getNextAddress(iter);
+            }
             assert.equal(allAddresses.length, addressesToAdd.length);
             addressesToAdd.forEach(addr => {
-                assert.isTrue(allAddresses.contains(addr));
+                assert.isTrue(allAddresses.includes(addr));
             });
         });
 
@@ -92,11 +98,10 @@ contract('AddressRegister', accounts => {
             addressRegister = await AddressRegisterContract.new({from: owner});
             assert.isOk(addressRegister);
 
-            addressesToAdd.forEach(address => {
-                addressRegister.registerAddress(address);
+            addressesToAdd.forEach(async address => {
+                const addingTx = await addressRegister.registerAddress(address);
+                assert.equal(findLastLog(addingTx, 'AddressRegistered').args.addr, address);
             });
-
-            assert.equal((await addressRegister.getAllAddresses()).length, 1);
         });
 
         const checkIfAddressExists = async (address: any) => {
@@ -105,7 +110,7 @@ contract('AddressRegister', accounts => {
 
         it('should be able to remove address as a owner', async () => {
             await addressRegister.remove(addressesToAdd[0], {from: owner});
-            assert.isFalse(checkIfAddressExists(addressesToAdd[0]));
+            assert.isFalse(await checkIfAddressExists(addressesToAdd[0]));
         });
 
         it('should not be able to remove address as a not owner', async () => {
