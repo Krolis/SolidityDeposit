@@ -25,7 +25,7 @@ declare module 'register' {
 
             isExist(addr: number): boolean;
 
-            getNextAddress(addr: Address): object;
+            getAllAddresses(): Address[];
 
             remove(addr: Address, options?: TransactionOptions): string;
 

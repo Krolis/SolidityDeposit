@@ -7,18 +7,20 @@ pragma solidity 0.4.18;
  */
 contract AddressRegister {
 
-    address private owner;
-
     struct Entry {
-        address last;
+        address prev;
         address next;
     }
+
+    address private owner;
 
     mapping(address => Entry) private addressesQueue;
 
     address private head;
 
     address private tail;
+
+    uint256 private addressesCount;
 
     mapping(address => bool) private addressesExistence;
 
@@ -48,9 +50,11 @@ contract AddressRegister {
             tail = addressToAdd;
         }
 
-        addressesQueue[addressToAdd].last = tail;
+        addressesQueue[addressToAdd].prev = tail;
         addressesQueue[tail].next = addressToAdd;
         tail = addressToAdd;
+
+        addressesCount++;
 
         addressesExistence[addressToAdd] = true;
 
@@ -61,25 +65,41 @@ contract AddressRegister {
         return addressesExistence[addressToCheck];
     }
 
-    function getNextAddress(address currentAddress) public view returns (address) {
-        if (currentAddress == 0) {
-            return head;
-        } else {
-            return addressesQueue[currentAddress].next;
+    function getAllAddresses() public view returns (address[]){
+        address[] memory result = new address[](addressesCount);
+
+        address iterator = head;
+
+        for (uint i = 0; i < addressesCount; i++) {
+            //assert?
+            result[i] = iterator;
+            iterator = addressesQueue[iterator].next;
         }
+        return result;
     }
 
-    function remove(address addressToRemove) public onlyOwner{
+    function remove(address addressToRemove) public onlyOwner {
         Entry entry = addressesQueue[addressToRemove];
 
-        addressesQueue[entry.last].next = entry.next;
-        addressesQueue[entry.next].last = entry.last;
+        addressesQueue[entry.prev].next = entry.next;
+        addressesQueue[entry.next].prev = entry.prev;
+
+        addressesCount--;
 
         addressesExistence[addressToRemove] = false;
     }
 
     function removeAll() public onlyOwner {
+        address iterator = head;
 
+        for (uint i = 0; i < addressesCount; i++) {
+            delete addressesExistence[iterator];
+            iterator = addressesQueue[iterator].next;
+            delete addressesQueue[iterator].prev;
+        }
 
+        delete head;
+        delete tail;
+        delete addressesCount;
     }
 }

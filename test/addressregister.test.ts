@@ -65,12 +65,7 @@ contract('AddressRegister', accounts => {
         });
 
         it('should be able to get all addresses', async () => {
-            const allAddresses: Address[] = [];
-            let iter = (await addressRegister.getNextAddress(0));
-            while (iter != ZERO_ADDRESS) {
-                allAddresses.push(iter);
-                iter = await addressRegister.getNextAddress(iter);
-            }
+            const allAddresses: Address[] = await addressRegister.getAllAddresses();
             assert.equal(allAddresses.length, addressesToAdd.length);
             addressesToAdd.forEach(addr => {
                 assert.isTrue(allAddresses.includes(addr));
@@ -124,7 +119,11 @@ contract('AddressRegister', accounts => {
 
         it('should be able to remove all as a owner', async () => {
             await addressRegister.removeAll({from: owner});
+
             assert.equal((await addressRegister.getAllAddresses()).length, 0);
+            addressesToAdd.forEach(async address => {
+                assert.isFalse(await addressRegister.isExist(address));
+            });
         });
 
         it('should not be able to remove all as not owner', async () => {
