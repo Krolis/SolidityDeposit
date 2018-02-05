@@ -9,11 +9,8 @@
     "lint:tslint": "tslint --project .",
     "lint:tslint:fix": "tslint --fix --project .",
     "lint:solhint": "solhint contracts/**/*.sol test/**/*.sol build/flat/**/*.sol",
-    "format": "prettier --write *.ts **/*.ts test/**/*.ts"
-  },
-  "author": {
-    "name": "Wojciech Harzowski",
-    "url": "https://github.com/harzo"
+    "format": "prettier --write *.ts **/*.ts test/**/*.ts",
+    "gas-usage": "truffle exec --network privateNet ./gas/GasUsage.js"
   },
   "devDependencies": {
     "@types/chai": "^4.0.8",
@@ -28,5 +25,8 @@
     "truffle": "^4.0.4",
     "tslint": "^5.8.0",
     "typescript": "^2.6.2"
+  },
+  "dependencies": {
+    "fs": "0.0.1-security"
   }
 }

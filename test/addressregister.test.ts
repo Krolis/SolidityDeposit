@@ -5,8 +5,7 @@ import * as Web3 from 'web3';
 import {AddressRegister, RegisterArtifacts} from 'register';
 
 import {ContractContextDefinition} from 'truffle';
-import {assertReverts, findLastLog, ZERO_ADDRESS} from './helpers';
-import {all} from "truffle-compile";
+import {assertReverts, findLastLog} from './helpers';
 
 declare const web3: Web3;
 declare const artifacts: RegisterArtifacts;
@@ -18,7 +17,8 @@ contract('AddressRegister', accounts => {
     const owner = accounts[0];
     let addressRegister: AddressRegister;
 
-    describe('#ctor', () => {
+    console.log(accounts);
+    describe('#constructor', () => {
         it('should create contract', async () => {
             addressRegister = await AddressRegisterContract.new({from: owner});
             assert.isOk(addressRegister);
@@ -40,6 +40,7 @@ contract('AddressRegister', accounts => {
 
         it('should not be able to add duplicated address', async () => {
             const addingTx = await addressRegister.registerAddress(accounts[0]);
+
             assert.isOk(findLastLog(addingTx, 'AddressRegistered'));
             assert.equal(findLastLog(addingTx, 'AddressRegistered').args.addr, accounts[0]);
 
