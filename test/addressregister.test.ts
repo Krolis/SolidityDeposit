@@ -1,8 +1,8 @@
 import {assert} from 'chai';
-import * as Web3 from 'web3';
-import {ContractContextDefinition} from 'truffle';
-import {assertReverts, findLastLog} from './helpers';
 import {AddressRegister, RegisterArtifacts} from 'register';
+import {ContractContextDefinition} from 'truffle';
+import * as Web3 from 'web3';
+import {assertReverts, findLastLog} from './helpers';
 
 declare const web3: Web3;
 declare const artifacts: RegisterArtifacts;
