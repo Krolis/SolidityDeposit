@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-import {Deposit, DepositArtifacts} from 'deposit';
+import {Deposit, DepositArtifacts} from 'register';
 import {ContractContextDefinition} from 'truffle';
 import * as Web3 from 'web3';
 

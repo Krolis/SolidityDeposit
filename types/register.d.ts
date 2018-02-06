@@ -1,4 +1,5 @@
-import {TransactionOptions} from 'truffle';
+import {Contract, TransactionOptions, TransactionResult} from 'truffle';
+import {AddressRegister} from 'register';
 
 declare module 'register' {
     import {
@@ -21,15 +22,21 @@ declare module 'register' {
 
         interface AddressRegister extends ContractBase {
 
-            registerAddress(address: Address): void;
+            isExist(addr: number): Promise<boolean>;
 
-            isExist(addr: number): boolean;
+            getAllAddresses(): Promise<Address[]>;
 
-            getAllAddresses(): Address[];
+            registerAddress(address: Address, options?: TransactionOptions): Promise<TransactionResult>;
 
-            remove(addr: Address, options?: TransactionOptions): string;
+            remove(addr: Address, options?: TransactionOptions): Promise<TransactionResult>;
 
-            removeAll(options?: TransactionOptions): void;
+            removeAll(options?: TransactionOptions): Promise<TransactionResult>;
+        }
+
+        interface Deposit extends ContractBase {
+            deposit(options?: TransactionOptions): Promise<TransactionResult>;
+
+            withdraw(amount: number, options?: TransactionOptions): Promise<TransactionResult>;
         }
 
         interface MigrationsContract extends Contract<Migrations> {
@@ -40,12 +47,18 @@ declare module 'register' {
             'new'(options?: TransactionOptions): Promise<AddressRegister>;
         }
 
+        interface DepositContract extends Contract<Deposit> {
+            'new'(options?: TransactionOptions): Promise<Deposit>;
+        }
+
         interface RegisterArtifacts extends TruffleArtifacts {
             require(name: string): AnyContract;
 
             require(name: './Migrations.sol'): MigrationsContract;
 
             require(name: './AddressRegister.sol'): AddressRegisterContract;
+
+            require(name: './Deposit.sol'): DepositContract;
         }
     }
 
