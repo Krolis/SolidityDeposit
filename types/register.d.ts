@@ -1,5 +1,4 @@
 import {Contract, TransactionOptions, TransactionResult} from 'truffle';
-import {AddressRegister} from 'register';
 
 declare module 'register' {
     import {
