@@ -7,10 +7,38 @@ pragma solidity 0.4.18;
  */
 contract Deposit {
 
-    address private owner;
+    struct Deposit {
+        uint256 balance;
+        uint256 firstDepositTimestamp;
+    }
 
-    function AddressRegister() public {
-        owner = msg.sender;
+    mapping(address => Deposit) private deposits;
+
+    modifier after2weeks() {
+        require(now > deposits[msg.sender].balance + 2 weeks);
+        _;
+    }
+
+    function getBalance() public view returns(uint){
+        return deposits[msg.sender].balance;
+    }
+
+    function deposit() public payable {
+        Deposit dep = deposits[msg.sender];
+        // todo check overflow
+        dep.balance += msg.value;
+        if (dep.firstDepositTimestamp == 0) {
+            dep.firstDepositTimestamp = now;
+        }
+        // todo consider to use event here
+    }
+
+    function withdraw(uint256 amount) public after2weeks {
+        Deposit memory dep = deposits[msg.sender];
+        if (dep.balance >= amount) {
+            dep.balance -= amount;
+            msg.sender.transfer(amount);
+        }
     }
 
 }
