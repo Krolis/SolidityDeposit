@@ -1,11 +1,8 @@
 import {assert} from 'chai';
-
 import * as Web3 from 'web3';
-
-import {AddressRegister, RegisterArtifacts} from 'register';
-
 import {ContractContextDefinition} from 'truffle';
 import {assertReverts, findLastLog} from './helpers';
+import {AddressRegister, RegisterArtifacts} from 'register';
 
 declare const web3: Web3;
 declare const artifacts: RegisterArtifacts;
@@ -17,7 +14,6 @@ contract('AddressRegister', accounts => {
     const owner = accounts[0];
     let addressRegister: AddressRegister;
 
-    console.log(accounts);
     describe('#constructor', () => {
         it('should create contract', async () => {
             addressRegister = await AddressRegisterContract.new({from: owner});
