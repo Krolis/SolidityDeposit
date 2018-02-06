@@ -27,6 +27,9 @@
     "typescript": "^2.6.2"
   },
   "dependencies": {
-    "fs": "0.0.1-security"
+    "@digix/tempo": "github:DigixGlobal/tempo",
+    "fs": "0.0.1-security",
+    "moment": "^2.20.1",
+    "tempo": "^0.2.7"
   }
 }

@@ -15,11 +15,11 @@ contract Deposit {
     mapping(address => Deposit) private deposits;
 
     modifier after2weeks() {
-        require(now > deposits[msg.sender].balance + 2 weeks);
+        require(now > deposits[msg.sender].firstDepositTimestamp + 2 weeks);
         _;
     }
 
-    function getBalance() public view returns(uint){
+    function getBalance() public view returns (uint){
         return deposits[msg.sender].balance;
     }
 
@@ -34,11 +34,14 @@ contract Deposit {
     }
 
     function withdraw(uint256 amount) public after2weeks {
-        Deposit memory dep = deposits[msg.sender];
-        if (dep.balance >= amount) {
-            dep.balance -= amount;
-            msg.sender.transfer(amount);
-        }
+        Deposit dep = deposits[msg.sender];
+        require(dep.balance >= amount);
+        dep.balance -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function getLockTimestamp() public view returns(uint256){
+        return deposits[msg.sender].firstDepositTimestamp;
     }
 
 }

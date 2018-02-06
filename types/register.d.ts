@@ -35,6 +35,8 @@ declare module 'register' {
         interface Deposit extends ContractBase {
             getBalance(options?: TransactionOptions): Promise<number>;
 
+            getLockTimestamp(options?: TransactionOptions): Promise<number>;
+
             deposit(options?: TransactionOptions): Promise<TransactionResult>;
 
             withdraw(amount: number, options?: TransactionOptions): Promise<TransactionResult>;
