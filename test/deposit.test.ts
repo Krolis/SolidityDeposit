@@ -2,7 +2,7 @@ import {assert} from 'chai';
 import {Deposit, DepositArtifacts} from 'register';
 import {ContractContextDefinition} from 'truffle';
 import * as Web3 from 'web3';
-import {findLastLog} from './helpers';
+import {assertReverts, findLastLog} from './helpers';
 
 declare const web3: Web3;
 declare const artifacts: DepositArtifacts;
@@ -60,9 +60,23 @@ contract('Deposit', accounts => {
     });
 
     describe('#withdraw', () => {
-        context('When is not in db', () => {
+        context('When is in db', () => {
             it('Should be able to withdraw', async () => {
-                assert.fail();
+                const balanceBefore = await deposit.getBalance({from: owner});
+                const withdrawAmount: number = web3.toWei(1, 'ether');
+
+                await deposit.withdraw(withdrawAmount, {from: owner});
+
+                const balanceAfter = await deposit.getBalance({from: owner});
+                assert.equal(balanceBefore.toNumber() - withdrawAmount, balanceAfter.toNumber());
+                // todo check if ether came back to acc??
+            });
+
+            it('Should revert if balance too small', async () => {
+                const balanceBefore = (await deposit.getBalance({from: owner})).toNumber();
+                await assertReverts(async () => {
+                    await deposit.withdraw(balanceBefore + 1, {from: owner});
+                });
             });
         });
 
