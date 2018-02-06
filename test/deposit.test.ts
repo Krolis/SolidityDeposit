@@ -2,6 +2,7 @@ import {assert} from 'chai';
 import {Deposit, DepositArtifacts} from 'register';
 import {ContractContextDefinition} from 'truffle';
 import * as Web3 from 'web3';
+import {findLastLog} from './helpers';
 
 declare const web3: Web3;
 declare const artifacts: DepositArtifacts;
@@ -27,8 +28,27 @@ contract('Deposit', accounts => {
     describe('#deposit', () => {
         context('When is in db', () => {
             it('Should be able to deposit', async () => {
-                assert.fail();
+                const depositAmount: number = web3.toWei(1, 'ether');
+                const depositTx = await deposit.deposit({from: owner, amount: depositAmount});
+                assert.isOk(depositTx);
             });
+
+            it('Should returns increased balance after deposit', async () => {
+                const balanceBefore = await deposit.getBalance({from: owner});
+                const depositAmount: number = web3.toWei(1, 'ether');
+
+                await deposit.deposit({from: owner, value: depositAmount});
+
+                const balanceAfter = await deposit.getBalance({from: owner});
+                assert.equal(balanceBefore.toNumber() + depositAmount, balanceAfter.toNumber());
+            });
+
+            /*it('Should emit event after deposit', async () => {
+                const depositAmount: number = web3.toWei(1, 'ether');
+                const depositTx = await deposit.deposit({from: owner, amount: depositAmount});
+                assert.isOk(findLastLog(depositTx, 'Deposited'));
+                assert.equal(findLastLog(depositTx, 'Deposited').args.addr, accounts[0]);
+            });*/
         });
 
 
