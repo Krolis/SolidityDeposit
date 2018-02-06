@@ -1,12 +1,13 @@
-import {RegisterArtifacts} from '../types/register';
-import {Deployer} from 'truffle';
+import { RegisterArtifacts } from 'register';
+import { Deployer } from 'truffle';
 
 declare const artifacts: RegisterArtifacts;
 
-const Migrations = artifacts.require('./Migrations.sol');
+const AddressRegister = artifacts.require('./AddressRegister.sol');
 
 async function deploy(deployer: Deployer) {
-    await deployer.deploy(Migrations);
+
+    await deployer.deploy(AddressRegister);
 }
 
 function migrate(deployer: Deployer) {

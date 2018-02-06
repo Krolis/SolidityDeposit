@@ -18,4 +18,5 @@ export = {
             ...defaults,
             network_id: 15
         }
+    }
 };
