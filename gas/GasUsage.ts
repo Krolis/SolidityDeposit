@@ -19,7 +19,7 @@ async function asyncExec() {
 
         for(const address of addresses){
             const addingTx = await addressRegister.registerAddress(address);
-            console.log('add', addingTx.receipt.gasUsed);
+            console.log('add', addingTx.receipt.gasUsed, address);
             //todo sum
         }
         //todo log1 registerAddresses
