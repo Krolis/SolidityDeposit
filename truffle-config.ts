@@ -17,13 +17,5 @@ export = {
         privateNet: {
             ...defaults,
             network_id: 15
-        },
-        testrpc: {
-            gas,
-            gasPrice: 0,
-            host,
-            network_id: '*',
-            port
         }
-    }
 };
