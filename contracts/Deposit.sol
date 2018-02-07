@@ -1,5 +1,10 @@
 pragma solidity 0.4.18;
 
+/**
+ * @title AddressRegisterInterface
+ * @dev AddressRegister interface.
+ * @author Króliczek Dominik (https://github.com/krolis)
+ */
 contract AddressRegisterInterface {
 
     function isExist(address addressToCheck) public view returns (bool);
@@ -9,7 +14,7 @@ contract AddressRegisterInterface {
 /**
  * @title Deposit
  * @dev Keeps track of balances and accepts deposits of Ether
- * @author Kroliczek Dominik (https://github.com/krolis)
+ * @author Króliczek Dominik (https://github.com/krolis)
  */
 contract Deposit {
 

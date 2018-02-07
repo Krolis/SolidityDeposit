@@ -1,38 +1,29 @@
 pragma solidity 0.4.18;
 
+import { Ownable } from "zeppelin-solidity/contracts/ownership/Ownable.sol";
+
 /**
  * @title Account addresses register
  * @dev Allows to store addresses in hopefully optimal way
  * @author Kroliczek Dominik (https://github.com/krolis)
  */
-contract AddressRegister {
+contract AddressRegister is Ownable {
 
     struct QueueEntry {
         address prev;
         address next;
     }
 
-    address private owner;
-
-    mapping(address => QueueEntry) private addressesQueue;
+    mapping (address => QueueEntry) private addressesQueue;
 
     address private tail;
 
     uint256 private addressesCount;
 
-    function AddressRegister() public {
-        owner = msg.sender;
-    }
-
     event AddressRegistered(address addr);
 
     modifier onlyIfAddressNotExist(address addr){
         require(!isExist(addr));
-        _;
-    }
-
-    modifier onlyOwner() {
-        require(msg.sender == owner);
         _;
     }
 
