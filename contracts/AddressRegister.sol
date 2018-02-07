@@ -2,6 +2,7 @@ pragma solidity 0.4.18;
 
 import { Ownable } from "zeppelin-solidity/contracts/ownership/Ownable.sol";
 
+
 /**
  * @title Account addresses register
  * @dev Allows to store addresses in hopefully optimal way
@@ -22,15 +23,15 @@ contract AddressRegister is Ownable {
 
     event AddressRegistered(address addr);
 
-    modifier onlyIfAddressNotExist(address addr){
+    modifier onlyIfAddressNotExist(address addr) {
         require(!isExist(addr));
         _;
     }
 
     function registerAddress(address addressToAdd)
-    public
-    onlyOwner
-    onlyIfAddressNotExist(addressToAdd)
+        public
+        onlyOwner
+        onlyIfAddressNotExist(addressToAdd)
     {
         addressesQueue[addressToAdd].prev = tail;
         addressesQueue[tail].next = addressToAdd;
@@ -41,11 +42,11 @@ contract AddressRegister is Ownable {
         AddressRegistered(addressToAdd);
     }
 
-    function isExist(address addressToCheck) public view returns (bool){
+    function isExist(address addressToCheck) public view returns (bool) {
         return addressToCheck == tail || addressesQueue[addressToCheck].next != address(0);
     }
 
-    function getAllAddresses() public view returns (address[]){
+    function getAllAddresses() public view returns (address[]) {
         address[] memory result = new address[](addressesCount);
 
         address iterator = tail;

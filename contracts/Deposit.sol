@@ -1,5 +1,6 @@
 pragma solidity 0.4.18;
 
+
 /**
  * @title AddressRegisterInterface
  * @dev AddressRegister interface.
@@ -10,6 +11,7 @@ contract AddressRegisterInterface {
     function isExist(address addressToCheck) public view returns (bool);
 
 }
+
 
 /**
  * @title Deposit
