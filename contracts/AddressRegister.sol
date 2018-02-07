@@ -23,6 +23,11 @@ contract AddressRegister is Ownable {
 
     event AddressRegistered(address addr);
 
+    modifier onlyValidAddress(address addr) {
+        require(addr != address(0));
+        _;
+    }
+
     modifier onlyIfAddressNotExist(address addr) {
         require(!isExisting(addr));
         _;
@@ -31,6 +36,7 @@ contract AddressRegister is Ownable {
     function registerAddress(address addressToAdd)
         public
         onlyOwner
+        onlyValidAddress(addressToAdd)
         onlyIfAddressNotExist(addressToAdd)
     {
         addressesQueue[addressToAdd].prev = tail;
@@ -42,7 +48,12 @@ contract AddressRegister is Ownable {
         AddressRegistered(addressToAdd);
     }
 
-    function isExisting(address addressToCheck) public view returns (bool) {
+    function isExisting(address addressToCheck)
+        public
+        view
+        onlyValidAddress(addressToCheck)
+        returns (bool)
+    {
         return addressToCheck == tail || addressesQueue[addressToCheck].next != address(0);
     }
 

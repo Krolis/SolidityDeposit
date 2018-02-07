@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import { ContractContextDefinition } from 'truffle';
 import * as Web3 from 'web3';
-import { assertReverts, findLastLog } from './helpers';
+import { assertReverts, findLastLog, ZERO_ADDRESS } from './helpers';
 import { AddressRegister, DepositArtifacts } from 'deposit';
 
 declare const web3: Web3;
@@ -51,6 +51,12 @@ contract('AddressRegister', accounts => {
         await addressRegister.registerAddress(accounts[0]);
       });
     });
+
+    it('should not be able to add invalid address', async () => {
+      await assertReverts(async () => {
+        await addressRegister.registerAddress(ZERO_ADDRESS);
+      });
+    });
   });
 
   describe('#get addresses', () => {
@@ -76,6 +82,12 @@ contract('AddressRegister', accounts => {
     it('should be able to check if address exists', async () => {
       const isExist = await addressRegister.isExisting(addressesToAdd[0]);
       assert.isTrue(isExist);
+    });
+
+    it('should revert for invalid address', async () => {
+      await assertReverts(async () => {
+        await addressRegister.isExisting(ZERO_ADDRESS);
+      });
     });
 
     it('should be able to check if address does not exist', async () => {

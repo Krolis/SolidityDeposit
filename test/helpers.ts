@@ -7,6 +7,8 @@ import { TransactionLog, TransactionResult } from 'truffle';
 
 declare const web3: Web3;
 
+export const ZERO_ADDRESS = '0x' + '0'.repeat(40);
+
 export async function assertReverts(func: () => void) {
   try {
     await func();

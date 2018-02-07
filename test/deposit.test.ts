@@ -1,7 +1,12 @@
 import { assert } from 'chai';
 import { ContractContextDefinition, TransactionResult } from 'truffle';
 import * as Web3 from 'web3';
-import { assertNumberAlmostEqual, assertReverts, findLastLog } from './helpers';
+import {
+  assertNumberAlmostEqual,
+  assertNumberEqual,
+  assertReverts,
+  findLastLog
+} from './helpers';
 import * as tempo from '@digix/tempo';
 import { toWei, Web3Utils } from '../utils';
 import { AddressRegister, Deposit, DepositArtifacts } from 'deposit';
@@ -114,11 +119,7 @@ contract('Deposit', accounts => {
           account
         )).toNumber();
 
-        assertNumberAlmostEqual(
-          balanceBefore.minus(withdrawAmount),
-          balanceAfter,
-          toWei(0.5)
-        );
+        assertNumberEqual(balanceBefore.minus(withdrawAmount), balanceAfter);
         assertNumberAlmostEqual(
           accountBalanceBefore.add(withdrawAmount),
           accountBalanceAfter,
