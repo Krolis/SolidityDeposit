@@ -3,8 +3,9 @@ import { ContractContextDefinition, TransactionResult } from 'truffle';
 import * as Web3 from 'web3';
 import { assertNumberAlmostEqual, assertReverts, findLastLog } from './helpers';
 import * as tempo from '@digix/tempo';
-import { Web3Utils } from '../utils';
+import { toWei, Web3Utils } from '../utils';
 import { AddressRegister, Deposit, DepositArtifacts } from 'deposit';
+import BigNumber from 'bignumber.js';
 
 declare const web3: Web3;
 declare const artifacts: DepositArtifacts;
@@ -49,7 +50,7 @@ contract('Deposit', accounts => {
   describe('#deposit', () => {
     context('When is in db', () => {
       it('should be able to deposit', async () => {
-        const depositAmount: number = +web3.toWei(1, 'ether');
+        const depositAmount: BigNumber = toWei(1);
         const depositTx: TransactionResult = await deposit.deposit({
           from: registeredAddress,
           value: depositAmount
@@ -85,48 +86,49 @@ contract('Deposit', accounts => {
   describe('#withdraw', () => {
     const waitUntilLockExpire = tempo(web3).wait;
     const twoWeeksInSeconds = 14 * 24 * 3600;
-    let balanceBefore: number;
+    let balanceBefore: BigNumber;
 
     beforeEach(async () => {
       await deposit.deposit({
         from: registeredAddress,
         value: web3.toWei(1, 'ether')
       });
-      balanceBefore = (await deposit.getBalance({
+      balanceBefore = await deposit.getBalance({
         from: registeredAddress
-      })).toNumber();
-      // console.log('balance ' + balanceBefore);
+      });
     });
 
     context('When is in db', () => {
       it('should be able to withdraw', async () => {
         const account = registeredAddress;
-        const withdrawAmount: number = parseInt(web3.toWei(1, 'ether'), 10);
-        const accountBalanceBefore: number = (await utils.getBalance(
-          account
-        )).toNumber();
+        const withdrawAmount: BigNumber = toWei(1);
+        const accountBalanceBefore: BigNumber = await utils.getBalance(account);
 
         await waitUntilLockExpire(twoWeeksInSeconds + 100);
         await deposit.withdraw(withdrawAmount, { from: account });
 
-        const balanceAfter: number = (await deposit.getBalance({
+        const balanceAfter: BigNumber = await deposit.getBalance({
           from: account
-        })).toNumber();
+        });
         const accountBalanceAfter: number = (await utils.getBalance(
           account
         )).toNumber();
 
-        assert.equal(balanceBefore - withdrawAmount, balanceAfter);
         assertNumberAlmostEqual(
-          accountBalanceBefore + withdrawAmount,
+          balanceBefore.minus(withdrawAmount),
+          balanceAfter,
+          toWei(0.5)
+        );
+        assertNumberAlmostEqual(
+          accountBalanceBefore.add(withdrawAmount),
           accountBalanceAfter,
-          parseInt(web3.toWei(0.5, 'ether'), 10)
+          toWei(0.5)
         );
       });
 
       it('should revert if balance too small', async () => {
         await assertReverts(async () => {
-          await deposit.withdraw(balanceBefore + 1, {
+          await deposit.withdraw(balanceBefore.add(1), {
             from: registeredAddress
           });
         });

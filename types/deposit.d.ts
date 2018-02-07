@@ -50,7 +50,7 @@ declare module 'deposit' {
       deposit(options?: TransactionOptions): Promise<TransactionResult>;
 
       withdraw(
-        amount: number,
+        amount: BigNumber,
         options?: TransactionOptions
       ): Promise<TransactionResult>;
     }
