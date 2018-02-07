@@ -1,6 +1,4 @@
-import {Contract, TransactionOptions, TransactionResult} from 'truffle';
-
-declare module 'register' {
+declare module 'deposit' {
     import {
         AnyContract,
         Contract,
@@ -9,8 +7,9 @@ declare module 'register' {
         TransactionResult,
         TruffleArtifacts
     } from 'truffle';
+    import BigNumber from 'bignumber.js';
 
-    namespace register {
+    namespace deposit {
         interface Migrations extends ContractBase {
             setCompleted(completed: number,
                          options?: TransactionOptions): Promise<TransactionResult>;
@@ -21,7 +20,7 @@ declare module 'register' {
 
         interface AddressRegister extends ContractBase {
 
-            isExist(addr: number): Promise<boolean>;
+            isExist(addr: Address): Promise<boolean>;
 
             getAllAddresses(): Promise<Address[]>;
 
@@ -36,9 +35,9 @@ declare module 'register' {
 
             addressRegister(): Promise<Address>;
 
-            getBalance(options?: TransactionOptions): Promise<number>;
+            getBalance(options?: TransactionOptions): Promise<BigNumber>;
 
-            getLockTimestamp(options?: TransactionOptions): Promise<number>;
+            getLockTimestamp(options?: TransactionOptions): Promise<BigNumber>;
 
             deposit(options?: TransactionOptions): Promise<TransactionResult>;
 
@@ -57,7 +56,7 @@ declare module 'register' {
             'new'(addr: Address, options?: TransactionOptions): Promise<Deposit>;
         }
 
-        interface RegisterArtifacts extends TruffleArtifacts {
+        interface DepositArtifacts extends TruffleArtifacts {
             require(name: string): AnyContract;
 
             require(name: './Migrations.sol'): MigrationsContract;
@@ -68,5 +67,5 @@ declare module 'register' {
         }
     }
 
-    export = register;
+    export = deposit;
 }

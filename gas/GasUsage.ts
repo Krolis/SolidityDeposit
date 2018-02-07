@@ -1,9 +1,9 @@
-import {RegisterArtifacts} from 'register';
 import {ScriptFinalizer} from 'truffle';
 import * as Web3 from 'web3';
+import {DepositArtifacts} from 'deposit';
 
 declare const web3: Web3;
-declare const artifacts: RegisterArtifacts;
+declare const artifacts: DepositArtifacts;
 
 const AddressRegisterContract = artifacts.require('./AddressRegister.sol');
 

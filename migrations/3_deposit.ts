@@ -1,7 +1,7 @@
 import {Deployer} from 'truffle';
-import {RegisterArtifacts} from 'register';
+import {DepositArtifacts} from 'deposit';
 
-declare const artifacts: RegisterArtifacts;
+declare const artifacts: DepositArtifacts;
 
 const Deposit = artifacts.require('./Deposit.sol');
 const AddressRegister = artifacts.require('./AddressRegister.sol');

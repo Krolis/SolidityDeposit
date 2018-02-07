@@ -1,11 +1,11 @@
 import {assert} from 'chai';
-import {AddressRegister, RegisterArtifacts} from 'register';
 import {ContractContextDefinition} from 'truffle';
 import * as Web3 from 'web3';
 import {assertReverts, findLastLog} from './helpers';
+import {AddressRegister, DepositArtifacts} from 'deposit';
 
 declare const web3: Web3;
-declare const artifacts: RegisterArtifacts;
+declare const artifacts: DepositArtifacts;
 declare const contract: ContractContextDefinition;
 
 const AddressRegisterContract = artifacts.require('./AddressRegister.sol');
@@ -65,7 +65,7 @@ contract('AddressRegister', accounts => {
             const allAddresses: Address[] = await addressRegister.getAllAddresses();
             assert.equal(allAddresses.length, addressesToAdd.length);
             addressesToAdd.forEach(addr => {
-                assert.isTrue(allAddresses.includes(addr));
+                assert.isOk(allAddresses.find(addressItem => addressItem === addr));
             });
         });
 

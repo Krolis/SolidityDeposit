@@ -1,7 +1,7 @@
-import {RegisterArtifacts} from '../types/register';
 import {Deployer} from 'truffle';
+import {DepositArtifacts} from 'deposit';
 
-declare const artifacts: RegisterArtifacts;
+declare const artifacts: DepositArtifacts;
 
 const Migrations = artifacts.require('./Migrations.sol');
 

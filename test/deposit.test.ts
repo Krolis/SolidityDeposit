@@ -1,10 +1,10 @@
 import {assert} from 'chai';
-import {AddressRegister, Deposit, DepositArtifacts} from 'register';
 import {ContractContextDefinition, TransactionResult} from 'truffle';
 import * as Web3 from 'web3';
 import {assertNumberAlmostEqual, assertReverts, findLastLog} from './helpers';
 import * as tempo from '@digix/tempo';
 import {Web3Utils} from '../utils';
+import {AddressRegister, Deposit, DepositArtifacts} from 'deposit';
 
 declare const web3: Web3;
 declare const artifacts: DepositArtifacts;
@@ -45,14 +45,14 @@ contract('Deposit', accounts => {
                 const depositAmount: number = +web3.toWei(1, 'ether');
                 const depositTx: TransactionResult = await deposit.deposit({
                     from: registeredAddress,
-                    amount: depositAmount
+                    value: depositAmount
                 });
                 assert.isOk(depositTx);
             });
 
             it('should returns increased balance after deposit', async () => {
                 const account: Address = registeredAddress;
-                const balanceBefore: number = await deposit.getBalance({from: account});
+                const balanceBefore: number = (await deposit.getBalance({from: account})).toNumber();
                 const depositAmount: number = +web3.toWei(1, 'ether');
 
                 await deposit.deposit({from: account, value: depositAmount});
