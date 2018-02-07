@@ -33,6 +33,9 @@ declare module 'register' {
         }
 
         interface Deposit extends ContractBase {
+
+            addressRegister(): Promise<Address>;
+
             getBalance(options?: TransactionOptions): Promise<number>;
 
             getLockTimestamp(options?: TransactionOptions): Promise<number>;
@@ -51,7 +54,7 @@ declare module 'register' {
         }
 
         interface DepositContract extends Contract<Deposit> {
-            'new'(options?: TransactionOptions): Promise<Deposit>;
+            'new'(addr: Address, options?: TransactionOptions): Promise<Deposit>;
         }
 
         interface RegisterArtifacts extends TruffleArtifacts {

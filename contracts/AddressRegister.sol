@@ -20,6 +20,10 @@ contract AddressRegister {
 
     uint256 private addressesCount;
 
+    function AddressRegister() public {
+        owner = msg.sender;
+    }
+
     event AddressRegistered(address addr);
 
     modifier onlyIfAddressNotExist(address addr){
@@ -30,10 +34,6 @@ contract AddressRegister {
     modifier onlyOwner() {
         require(msg.sender == owner);
         _;
-    }
-
-    function AddressRegister() public {
-        owner = msg.sender;
     }
 
     function registerAddress(address addressToAdd)
@@ -67,7 +67,7 @@ contract AddressRegister {
     }
 
     function remove(address addressToRemove) public onlyOwner {
-        QueueEntry entry = addressesQueue[addressToRemove];
+        QueueEntry storage entry = addressesQueue[addressToRemove];
 
         addressesQueue[entry.prev].next = entry.next;
         addressesQueue[entry.next].prev = entry.prev;

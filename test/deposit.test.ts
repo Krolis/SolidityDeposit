@@ -1,8 +1,8 @@
 import {assert} from 'chai';
-import {Deposit, DepositArtifacts} from 'register';
+import {AddressRegister, Deposit, DepositArtifacts} from 'register';
 import {ContractContextDefinition, TransactionResult} from 'truffle';
 import * as Web3 from 'web3';
-import {assertNumberAlmostEqual, assertReverts, findLastLog, getBalance, promisify} from './helpers';
+import {assertNumberAlmostEqual, assertReverts, findLastLog, getBalance} from './helpers';
 import * as tempo from '@digix/tempo';
 
 declare const web3: Web3;
@@ -10,19 +10,30 @@ declare const artifacts: DepositArtifacts;
 declare const contract: ContractContextDefinition;
 
 const DepositContract = artifacts.require('./Deposit.sol');
+const AddressRegisterContract = artifacts.require('./AddressRegister.sol');
 
 contract('Deposit', accounts => {
     const owner = accounts[0];
+    const registeredAddress = accounts[1];
+    const notRegisteredAddress = accounts[2];
 
+    let addressRegister: AddressRegister;
     let deposit: Deposit;
 
     beforeEach(async () => {
-        deposit = await DepositContract.new({from: owner});
+        addressRegister = await AddressRegisterContract.new({from: owner});
+        deposit = await DepositContract.new(addressRegister.address, {from: owner});
+        const registerAddressTx = await addressRegister.registerAddress(registeredAddress);
+        assert.equal(findLastLog(registerAddressTx, 'AddressRegistered').args.addr, registeredAddress);
     });
 
     describe('#constructor', () => {
         it('should create contract', async () => {
             assert.isOk(deposit);
+        });
+
+        it('should set register address', async () => {
+            assert.equal(await deposit.addressRegister(), addressRegister.address);
         });
     });
 
@@ -30,17 +41,21 @@ contract('Deposit', accounts => {
         context('When is in db', () => {
             it('should be able to deposit', async () => {
                 const depositAmount: number = +web3.toWei(1, 'ether');
-                const depositTx: TransactionResult = await deposit.deposit({from: owner, amount: depositAmount});
+                const depositTx: TransactionResult = await deposit.deposit({
+                    from: registeredAddress,
+                    amount: depositAmount
+                });
                 assert.isOk(depositTx);
             });
 
             it('should returns increased balance after deposit', async () => {
-                const balanceBefore: number = await deposit.getBalance({from: owner});
+                const account: Address = registeredAddress;
+                const balanceBefore: number = await deposit.getBalance({from: account});
                 const depositAmount: number = +web3.toWei(1, 'ether');
 
-                await deposit.deposit({from: owner, value: depositAmount});
+                await deposit.deposit({from: account, value: depositAmount});
 
-                const balanceAfter: number = (await deposit.getBalance({from: owner})).toNumber();
+                const balanceAfter: number = (await deposit.getBalance({from: account})).toNumber();
                 assert.equal(balanceBefore + depositAmount, balanceAfter);
             });
 
@@ -53,9 +68,10 @@ contract('Deposit', accounts => {
         });
 
         context('When is not in db', () => {
+
             it('should not be able to deposit', async () => {
                 await assertReverts(async () => {
-                    await deposit.deposit({from: accounts[1], value: 100000});
+                    await deposit.deposit({from: notRegisteredAddress, value: 100000});
                 });
             });
         });
@@ -67,21 +83,23 @@ contract('Deposit', accounts => {
         let balanceBefore: number;
 
         beforeEach(async () => {
-            await deposit.deposit({from: owner, value: web3.toWei(1, 'ether')});
-            balanceBefore = (await deposit.getBalance({from: owner})).toNumber();
+            await deposit.deposit({from: registeredAddress, value: web3.toWei(1, 'ether')});
+            balanceBefore = (await deposit.getBalance({from: registeredAddress})).toNumber();
             // console.log('balance ' + balanceBefore);
         });
 
         context('When is in db', () => {
+
             it('should be able to withdraw', async () => {
+                const account = registeredAddress;
                 const withdrawAmount: number = parseInt(web3.toWei(1, 'ether'), 10);
-                const accountBalanceBefore: number = (await getBalance(owner)).toNumber();
+                const accountBalanceBefore: number = (await getBalance(account)).toNumber();
 
                 await waitUntilLockExpire(twoWeeksInSeconds + 100);
-                await deposit.withdraw(withdrawAmount, {from: owner});
+                await deposit.withdraw(withdrawAmount, {from: account});
 
-                const balanceAfter: number = (await deposit.getBalance({from: owner})).toNumber();
-                const accountBalanceAfter: number = (await getBalance(owner)).toNumber();
+                const balanceAfter: number = (await deposit.getBalance({from: account})).toNumber();
+                const accountBalanceAfter: number = (await getBalance(account)).toNumber();
 
                 assert.equal(balanceBefore - withdrawAmount, balanceAfter);
                 assertNumberAlmostEqual(accountBalanceBefore + withdrawAmount,
@@ -89,9 +107,9 @@ contract('Deposit', accounts => {
                     parseInt(web3.toWei(0.5, 'ether'), 10));
             });
 
-            it('Should revert if balance too small', async () => {
+            it('should revert if balance too small', async () => {
                 await assertReverts(async () => {
-                    await deposit.withdraw(balanceBefore + 1, {from: owner});
+                    await deposit.withdraw(balanceBefore + 1, {from: registeredAddress});
                 });
             });
         });
