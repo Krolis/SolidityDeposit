@@ -8,7 +8,7 @@ pragma solidity 0.4.18;
  */
 contract AddressRegisterInterface {
 
-    function isExist(address addressToCheck) public view returns (bool);
+    function isExisting(address addressToCheck) public view returns (bool);
 
 }
 
@@ -39,7 +39,7 @@ contract Deposit {
     }
 
     modifier onlyRegistered(address addr) {
-        require(addressRegister.isExist(addr));
+        require(addressRegister.isExisting(addr));
         _;
     }
 

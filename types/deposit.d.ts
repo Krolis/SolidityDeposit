@@ -23,7 +23,7 @@ declare module 'deposit' {
     }
 
     interface AddressRegister extends ContractBase {
-      isExist(addr: Address): Promise<boolean>;
+      isExisting(addr: Address): Promise<boolean>;
 
       getAllAddresses(): Promise<Address[]>;
 

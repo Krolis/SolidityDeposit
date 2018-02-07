@@ -74,12 +74,12 @@ contract('AddressRegister', accounts => {
     });
 
     it('should be able to check if address exists', async () => {
-      const isExist = await addressRegister.isExist(addressesToAdd[0]);
+      const isExist = await addressRegister.isExisting(addressesToAdd[0]);
       assert.isTrue(isExist);
     });
 
     it('should be able to check if address does not exist', async () => {
-      const isExist = await addressRegister.isExist(
+      const isExist = await addressRegister.isExisting(
         '0x2a1c7f37ff4041072cc97ba2f9c31d4e6147935e'
       );
       assert.isFalse(isExist);
@@ -103,7 +103,7 @@ contract('AddressRegister', accounts => {
     });
 
     const checkIfAddressExists = async (address: any) => {
-      return await addressRegister.isExist(address);
+      return await addressRegister.isExisting(address);
     };
 
     it('should be able to remove address as a owner', async () => {
@@ -122,7 +122,7 @@ contract('AddressRegister', accounts => {
 
       assert.equal((await addressRegister.getAllAddresses()).length, 0);
       addressesToAdd.forEach(async address => {
-        assert.isFalse(await addressRegister.isExist(address));
+        assert.isFalse(await addressRegister.isExisting(address));
       });
     });
 
