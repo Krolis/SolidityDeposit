@@ -96,14 +96,3 @@ export function findLastLog(trans: TransactionResult,
                             event: string): TransactionLog {
     return findLast(propEq('event', event))(trans.logs);
 }
-
-export function getBalance(address: Address): Promise<BigNumber> {
-    return new Promise((resolve, reject) =>
-        web3.eth.getBalance(address, (err: any, res: any) => {
-            if (err) {
-                reject(err);
-            }
-            resolve(res);
-        })
-    );
-}

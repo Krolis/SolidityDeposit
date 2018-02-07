@@ -2,13 +2,15 @@ import {assert} from 'chai';
 import {AddressRegister, Deposit, DepositArtifacts} from 'register';
 import {ContractContextDefinition, TransactionResult} from 'truffle';
 import * as Web3 from 'web3';
-import {assertNumberAlmostEqual, assertReverts, findLastLog, getBalance} from './helpers';
+import {assertNumberAlmostEqual, assertReverts, findLastLog} from './helpers';
 import * as tempo from '@digix/tempo';
+import {Web3Utils} from '../utils';
 
 declare const web3: Web3;
 declare const artifacts: DepositArtifacts;
 declare const contract: ContractContextDefinition;
 
+const utils = new Web3Utils(web3);
 const DepositContract = artifacts.require('./Deposit.sol');
 const AddressRegisterContract = artifacts.require('./AddressRegister.sol');
 
@@ -93,13 +95,13 @@ contract('Deposit', accounts => {
             it('should be able to withdraw', async () => {
                 const account = registeredAddress;
                 const withdrawAmount: number = parseInt(web3.toWei(1, 'ether'), 10);
-                const accountBalanceBefore: number = (await getBalance(account)).toNumber();
+                const accountBalanceBefore: number = (await utils.getBalance(account)).toNumber();
 
                 await waitUntilLockExpire(twoWeeksInSeconds + 100);
                 await deposit.withdraw(withdrawAmount, {from: account});
 
                 const balanceAfter: number = (await deposit.getBalance({from: account})).toNumber();
-                const accountBalanceAfter: number = (await getBalance(account)).toNumber();
+                const accountBalanceAfter: number = (await utils.getBalance(account)).toNumber();
 
                 assert.equal(balanceBefore - withdrawAmount, balanceAfter);
                 assertNumberAlmostEqual(accountBalanceBefore + withdrawAmount,
