@@ -60,13 +60,6 @@ contract('Deposit', accounts => {
                 const balanceAfter: number = (await deposit.getBalance({from: account})).toNumber();
                 assert.equal(balanceBefore + depositAmount, balanceAfter);
             });
-
-            /*it('Should emit event after deposit', async () => {
-                const depositAmount: number = web3.toWei(1, 'ether');
-                const depositTx = await deposit.deposit({from: owner, amount: depositAmount});
-                assert.isOk(findLastLog(depositTx, 'Deposited'));
-                assert.equal(findLastLog(depositTx, 'Deposited').args.addr, accounts[0]);
-            });*/
         });
 
         context('When is not in db', () => {
@@ -114,13 +107,6 @@ contract('Deposit', accounts => {
                     await deposit.withdraw(balanceBefore + 1, {from: registeredAddress});
                 });
             });
-        });
-
-        context('When is not in db', () => {
-            // should we handling this situations or just return balance ( probably 0 )
-            /*it('Should not be able to withdraw', async () => {
-
-            });*/
         });
     });
 });

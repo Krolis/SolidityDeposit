@@ -65,5 +65,4 @@ contract Deposit {
     function getLockTimestamp() public view returns (uint256) {
         return deposits[msg.sender].firstDepositTimestamp;
     }
-
 }
