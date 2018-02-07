@@ -1,5 +1,7 @@
 pragma solidity 0.4.18;
 
+import { SafeMath } from "zeppelin-solidity/contracts/math/SafeMath.sol";
+
 
 /**
  * @title AddressRegisterInterface
@@ -19,6 +21,8 @@ contract AddressRegisterInterface {
  * @author Króliczek Dominik (https://github.com/krolis)
  */
 contract Deposit {
+
+    using SafeMath for uint256;
 
     struct DepositEntry {
         uint256 balance;
@@ -49,8 +53,7 @@ contract Deposit {
 
     function deposit() public payable onlyRegistered(msg.sender) {
         DepositEntry storage dep = deposits[msg.sender];
-        // todo check overflow
-        dep.balance += msg.value;
+        dep.balance = dep.balance.add(msg.value);
         if (dep.firstDepositTimestamp == 0) {
             dep.firstDepositTimestamp = now;
         }
@@ -60,7 +63,7 @@ contract Deposit {
     function withdraw(uint256 amount) public after2weeks {
         DepositEntry storage dep = deposits[msg.sender];
         require(dep.balance >= amount);
-        dep.balance -= amount;
+        dep.balance = dep.balance.sub(amount);
         msg.sender.transfer(amount);
     }
 

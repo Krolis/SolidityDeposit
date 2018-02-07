@@ -1,5 +1,6 @@
 pragma solidity 0.4.18;
 
+import { SafeMath } from "zeppelin-solidity/contracts/math/SafeMath.sol";
 import { Ownable } from "zeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
@@ -9,6 +10,8 @@ import { Ownable } from "zeppelin-solidity/contracts/ownership/Ownable.sol";
  * @author Kroliczek Dominik (https://github.com/krolis)
  */
 contract AddressRegister is Ownable {
+
+    using SafeMath for uint256;
 
     struct QueueEntry {
         address prev;
@@ -43,7 +46,7 @@ contract AddressRegister is Ownable {
         addressesQueue[tail].next = addressToAdd;
         tail = addressToAdd;
 
-        addressesCount++;
+        addressesCount = addressesCount.add(1);
 
         AddressRegistered(addressToAdd);
     }
@@ -78,7 +81,7 @@ contract AddressRegister is Ownable {
         delete entry.next;
         delete entry.prev;
 
-        addressesCount--;
+        addressesCount = addressesCount.sub(1);
     }
 
     function removeAll() public onlyOwner {
