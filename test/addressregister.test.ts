@@ -38,14 +38,6 @@ contract('AddressRegister', accounts => {
       );
     });
 
-    it('should exists after adding address', async () => {
-      await addressRegister.registerAddress(accounts[0], {
-        from: owner
-      });
-      const isExist = await addressRegister.isExisting(accounts[0]);
-      assert.isTrue(isExist);
-    });
-
     it('should not be able to add duplicated address', async () => {
       const addingTx = await addressRegister.registerAddress(accounts[0]);
 
@@ -152,6 +144,48 @@ contract('AddressRegister', accounts => {
       await assertReverts(async () => {
         await addressRegister.removeAll({ from: accounts[1] });
       });
+    });
+  });
+
+  describe('#integration', async () => {
+    it('should exists after adding address', async () => {
+      addressRegister = await AddressRegisterContract.new({ from: owner });
+      await addressRegister.registerAddress(accounts[0], {
+        from: owner
+      });
+      const isExist = await addressRegister.isExisting(accounts[0]);
+      assert.isTrue(isExist);
+    });
+
+    it('should be empty after add and remove one element', async () => {
+      addressRegister = await AddressRegisterContract.new({ from: owner });
+      await addressRegister.registerAddress(accounts[0], {
+        from: owner
+      });
+      assert.isTrue(await addressRegister.isExisting(accounts[0]));
+      await addressRegister.remove(accounts[0], { from: owner });
+      assert.isFalse(await addressRegister.isExisting(accounts[0]));
+      assert.equal((await addressRegister.getAllAddresses()).length, 0);
+    });
+
+    it('should be empty after add and remove few elements', async () => {
+      addressRegister = await AddressRegisterContract.new({ from: owner });
+      const addresses = [accounts[0], accounts[1], accounts[2]];
+      for (const addr of addresses) {
+        await addressRegister.registerAddress(addr, {
+          from: owner
+        });
+      }
+      assert.equal(
+        (await addressRegister.getAllAddresses()).length,
+        addresses.length
+      );
+      for (const addr of addresses) {
+        assert.isTrue(await addressRegister.isExisting(addr));
+        await addressRegister.remove(addr, { from: owner });
+        assert.isFalse(await addressRegister.isExisting(addr));
+      }
+      assert.equal((await addressRegister.getAllAddresses()).length, 0);
     });
   });
 });
