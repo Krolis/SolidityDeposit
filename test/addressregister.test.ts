@@ -38,6 +38,14 @@ contract('AddressRegister', accounts => {
       );
     });
 
+    it('should exists after adding address', async () => {
+      await addressRegister.registerAddress(accounts[0], {
+        from: owner
+      });
+      const isExist = await addressRegister.isExisting(accounts[0]);
+      assert.isTrue(isExist);
+    });
+
     it('should not be able to add duplicated address', async () => {
       const addingTx = await addressRegister.registerAddress(accounts[0]);
 
@@ -80,8 +88,10 @@ contract('AddressRegister', accounts => {
     });
 
     it('should be able to check if address exists', async () => {
-      const isExist = await addressRegister.isExisting(addressesToAdd[0]);
-      assert.isTrue(isExist);
+      addressesToAdd.forEach(async addr => {
+        const isExist = await addressRegister.isExisting(addr);
+        assert.isTrue(isExist);
+      });
     });
 
     it('should revert for invalid address', async () => {

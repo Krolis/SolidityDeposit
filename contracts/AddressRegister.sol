@@ -58,7 +58,7 @@ contract AddressRegister is Ownable {
         onlyValidAddress(addressToCheck)
         returns (bool)
     {
-        return addressesQueue[addressToCheck].prev != address(0);
+        return addressesQueue[addressToCheck].next != address(0) || addressesQueue[0].prev == addressToCheck;
     }
 
     function getAllAddresses() public view returns (address[]) {
