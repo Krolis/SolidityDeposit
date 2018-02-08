@@ -17,6 +17,11 @@ export = {
     privateNet: {
       ...defaults,
       network_id: 15
-    }
+    },
+      develop: {
+          ...defaults,
+          network_id: 15,
+          port: 9545
+      }
   }
 };
