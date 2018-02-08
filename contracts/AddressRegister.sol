@@ -20,8 +20,6 @@ contract AddressRegister is Ownable {
 
     mapping (address => QueueEntry) private addressesQueue;
 
-    address private tail;
-
     uint256 private addressesCount;
 
     event AddressRegistered(address addr);
@@ -42,9 +40,12 @@ contract AddressRegister is Ownable {
         onlyValidAddress(addressToAdd)
         onlyIfAddressNotExist(addressToAdd)
     {
-        addressesQueue[addressToAdd].prev = tail;
-        addressesQueue[tail].next = addressToAdd;
-        tail = addressToAdd;
+        QueueEntry storage head = addressesQueue[0];
+        QueueEntry storage prev = addressesQueue[head.prev];
+
+        addressesQueue[addressToAdd].prev = head.prev;
+        head.prev = addressToAdd;
+        prev.next = addressToAdd;
 
         addressesCount = addressesCount.add(1);
 
@@ -57,13 +58,13 @@ contract AddressRegister is Ownable {
         onlyValidAddress(addressToCheck)
         returns (bool)
     {
-        return addressToCheck == tail || addressesQueue[addressToCheck].next != address(0);
+        return addressesQueue[addressToCheck].next != address(0) || addressesQueue[0].prev == addressToCheck;
     }
 
     function getAllAddresses() public view returns (address[]) {
         address[] memory result = new address[](addressesCount);
 
-        address iterator = tail;
+        address iterator = addressesQueue[0].prev;
 
         for (uint i = 0; i < addressesCount; i++) {
             result[i] = iterator;
@@ -85,7 +86,7 @@ contract AddressRegister is Ownable {
     }
 
     function removeAll() public onlyOwner {
-        address iterator = tail;
+        address iterator = addressesQueue[0].prev;
 
         for (uint i = 0; i < addressesCount; i++) {
             address toDelete = iterator;
@@ -93,7 +94,7 @@ contract AddressRegister is Ownable {
             delete addressesQueue[toDelete];
         }
 
-        delete tail;
+        delete addressesQueue[0].prev;
         delete addressesCount;
     }
 }
