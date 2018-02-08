@@ -24,6 +24,10 @@ contract AddressRegister is Ownable {
 
     event AddressRegistered(address addr);
 
+    event AddressRemoved(address addr);
+
+    event AddressRegisterCleared();
+
     modifier onlyValidAddress(address addr) {
         require(addr != address(0));
         _;
@@ -83,6 +87,7 @@ contract AddressRegister is Ownable {
         delete entry.prev;
 
         addressesCount = addressesCount.sub(1);
+        AddressRemoved(addressToRemove);
     }
 
     function removeAll() public onlyOwner {
@@ -96,5 +101,6 @@ contract AddressRegister is Ownable {
 
         delete addressesQueue[0].prev;
         delete addressesCount;
+        AddressRegisterCleared();
     }
 }

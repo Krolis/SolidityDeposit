@@ -40,6 +40,16 @@ declare module 'deposit' {
       removeAll(options?: TransactionOptions): Promise<TransactionResult>;
     }
 
+    interface AddressRegisteredEvent {
+      addr: Address;
+    }
+
+    interface AddressRemovedEvent {
+      addr: Address;
+    }
+
+    type AddressesRegisterClearedEvent = {};
+
     interface Deposit extends ContractBase {
       addressRegister(): Promise<Address>;
 

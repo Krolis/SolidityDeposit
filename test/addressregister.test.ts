@@ -2,7 +2,12 @@ import { assert } from 'chai';
 import { ContractContextDefinition } from 'truffle';
 import * as Web3 from 'web3';
 import { assertReverts, findLastLog, ZERO_ADDRESS } from './helpers';
-import { AddressRegister, DepositArtifacts } from 'deposit';
+import {
+  AddressesRegisterClearedEvent,
+  AddressRegister,
+  AddressRemovedEvent,
+  DepositArtifacts
+} from 'deposit';
 
 declare const web3: Web3;
 declare const artifacts: DepositArtifacts;
@@ -125,6 +130,16 @@ contract('AddressRegister', accounts => {
       assert.isFalse(await checkIfAddressExists(addressesToAdd[0]));
     });
 
+    it('should emit event after remove', async () => {
+      const addr = addressesToAdd[1];
+      const removeTx = await addressRegister.remove(addr, { from: owner });
+      const log = findLastLog(removeTx, 'AddressRemoved');
+      assert.isOk(log);
+      const event = log.args as AddressRemovedEvent;
+      assert.isOk(event);
+      assert.equal(event.addr, addr);
+    });
+
     it('should not be able to remove address as a not owner', async () => {
       await assertReverts(async () => {
         await addressRegister.remove(addressesToAdd[0], { from: accounts[1] });
@@ -138,6 +153,15 @@ contract('AddressRegister', accounts => {
       addressesToAdd.forEach(async address => {
         assert.isFalse(await addressRegister.isExisting(address));
       });
+    });
+
+    it('should emit event after remove all', async () => {
+      const removeTx = await addressRegister.removeAll({ from: owner });
+
+      const log = findLastLog(removeTx, 'AddressRegisterCleared');
+      assert.isOk(log);
+      const event = log.args as AddressesRegisterClearedEvent;
+      assert.isOk(event);
     });
 
     it('should not be able to remove all as not owner', async () => {
